@@ -2,7 +2,7 @@
 
 ## Installation
 
-Use the code editor [vscode](https://pip.pypa.io/en/stable/) with [Project Manager for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-dependency) extension to run.
+Use the code editor [vscode](https://code.visualstudio.com/) with [Project Manager for Java](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-dependency) extension to run.
 
 ## Structure
 ```bash
