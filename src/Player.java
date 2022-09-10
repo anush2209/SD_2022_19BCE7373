@@ -22,6 +22,10 @@ public class Player {
       Piece newPiece = new Hero2(piece);
       newPiece.setPosition(x, y);
       characters.add(newPiece);
+    } else if (piece.charAt(0) == 'H' && piece.charAt(1) == '3') {
+      Piece newPiece = new Hero3(piece);
+      newPiece.setPosition(x, y);
+      characters.add(newPiece);
     }
     return name + "-" + piece;
   }
@@ -36,6 +40,7 @@ public class Player {
 
   public String makeMove(Piece piece, String move) {
     String kill = "false";
+    int steps = 1;
     if (name == "B")
       switch (move) {
         case "F":
@@ -61,6 +66,18 @@ public class Player {
           break;
         case "BR":
           move = "FL";
+          break;
+        case "RF":
+          move = "LB";
+          break;
+        case "RB":
+          move = "LF";
+          break;
+        case "LF":
+          move = "RB";
+          break;
+        case "LB":
+          move = "RF";
           break;
       }
     if (piece != null) {
@@ -103,41 +120,93 @@ public class Player {
             kill = "true";
         return piece.x + ":" + piece.y + ":" + piece.x + ":" + (++piece.y) + ":" + kill;
       } else if (move.equals("FL")) {
-        if (piece.y == 0 || piece.x == 0)
+        if (piece.getClass() == new Hero3("").getClass())
+          steps = 2;
+        if (piece.y - steps < 0 || piece.x == 0)
           return "Character going out of grid bounds.";
-        if (!App.grid[piece.y - 1][piece.x - 1].equals("-"))
-          if (App.grid[piece.y - 1][piece.x - 1].split("-")[0].equals(name))
+        if (!App.grid[piece.y - steps][piece.x - 1].equals("-"))
+          if (App.grid[piece.y - steps][piece.x - 1].split("-")[0].equals(name))
             return "Targeting a friendly character, i.e a character from our own team.";
           else
             kill = "true";
-        return piece.x + ":" + piece.y + ":" + (--piece.x) + ":" + (--piece.y) + ":" + kill;
+        return piece.x + ":" + piece.y + ":" + (--piece.x) + ":" + (piece.y -= steps) + ":" + kill;
       } else if (move.equals("FR")) {
-        if (piece.y == 0 || piece.x == App.grid.length - 1)
+        if (piece.getClass() == new Hero3("").getClass())
+          steps = 2;
+        if (piece.y - steps < 0 || piece.x == App.grid.length - 1)
           return "Character going out of grid bounds.";
-        if (!App.grid[piece.y - 1][piece.x + 1].equals("-"))
-          if (App.grid[piece.y - 1][piece.x + 1].split("-")[0].equals(name))
+        if (!App.grid[piece.y - steps][piece.x + 1].equals("-"))
+          if (App.grid[piece.y - steps][piece.x + 1].split("-")[0].equals(name))
             return "Targeting a friendly character, i.e a character from our own team.";
           else
             kill = "true";
-        return piece.x + ":" + piece.y + ":" + (++piece.x) + ":" + (--piece.y) + ":" + kill;
+        return piece.x + ":" + piece.y + ":" + (++piece.x) + ":" + (piece.y -= steps) + ":" + kill;
       } else if (move.equals("BL")) {
-        if (piece.y == App.grid.length - 1 || piece.x == 0)
+        if (piece.getClass() == new Hero3("").getClass())
+          steps = 2;
+        if (piece.y + steps > App.grid.length - 1 || piece.x == 0)
           return "Character going out of grid bounds.";
-        if (!App.grid[piece.y + 1][piece.x - 1].equals("-"))
-          if (App.grid[piece.y + 1][piece.x - 1].split("-")[0].equals(name))
+        if (!App.grid[piece.y + steps][piece.x - 1].equals("-"))
+          if (App.grid[piece.y + steps][piece.x - 1].split("-")[0].equals(name))
             return "Targeting a friendly character, i.e a character from our own team.";
           else
             kill = "true";
-        return piece.x + ":" + piece.y + ":" + (--piece.x) + ":" + (++piece.y) + ":" + kill;
+        return piece.x + ":" + piece.y + ":" + (--piece.x) + ":" + (piece.y += steps) + ":" + kill;
       } else if (move.equals("BR")) {
-        if (piece.y == App.grid.length - 1 || piece.x == App.grid.length - 1)
+        if (piece.getClass() == new Hero3("").getClass())
+          steps = 2;
+        if (piece.y + steps > App.grid.length - 1 || piece.x == App.grid.length - 1)
           return "Character going out of grid bounds.";
-        if (!App.grid[piece.y + 1][piece.x + 1].equals("-"))
-          if (App.grid[piece.y + 1][piece.x + 1].split("-")[0].equals(name))
+        if (!App.grid[piece.y + steps][piece.x + 1].equals("-"))
+          if (App.grid[piece.y + steps][piece.x + 1].split("-")[0].equals(name))
             return "Targeting a friendly character, i.e a character from our own team.";
           else
             kill = "true";
-        return piece.x + ":" + piece.y + ":" + (++piece.x) + ":" + (++piece.y) + ":" + kill;
+        return piece.x + ":" + piece.y + ":" + (++piece.x) + ":" + (piece.y += steps) + ":" + kill;
+      } else if (move.equals("RF")) {
+        if (piece.getClass() == new Hero3("").getClass())
+          steps = 2;
+        if (piece.y == 0 || piece.x + steps > App.grid.length - 1)
+          return "Character going out of grid bounds.";
+        if (!App.grid[piece.y - 1][piece.x + steps].equals("-"))
+          if (App.grid[piece.y - 1][piece.x + steps].split("-")[0].equals(name))
+            return "Targeting a friendly character, i.e a character from our own team.";
+          else
+            kill = "true";
+        return piece.x + ":" + piece.y + ":" + (piece.x += steps) + ":" + (--piece.y) + ":" + kill;
+      } else if (move.equals("RB")) {
+        if (piece.getClass() == new Hero3("").getClass())
+          steps = 2;
+        if (piece.y == App.grid.length - 1 || piece.x + steps > App.grid.length - 1)
+          return "Character going out of grid bounds.";
+        if (!App.grid[piece.y + 1][piece.x + steps].equals("-"))
+          if (App.grid[piece.y + 1][piece.x + steps].split("-")[0].equals(name))
+            return "Targeting a friendly character, i.e a character from our own team.";
+          else
+            kill = "true";
+        return piece.x + ":" + piece.y + ":" + (piece.x += steps) + ":" + (++piece.y) + ":" + kill;
+      } else if (move.equals("LF")) {
+        if (piece.getClass() == new Hero3("").getClass())
+          steps = 2;
+        if (piece.y == 0 || piece.x - steps < 0)
+          return "Character going out of grid bounds.";
+        if (!App.grid[piece.y - 1][piece.x - steps].equals("-"))
+          if (App.grid[piece.y - 1][piece.x - steps].split("-")[0].equals(name))
+            return "Targeting a friendly character, i.e a character from our own team.";
+          else
+            kill = "true";
+        return piece.x + ":" + piece.y + ":" + (piece.x -= steps) + ":" + (--piece.y) + ":" + kill;
+      } else if (move.equals("LB")) {
+        if (piece.getClass() == new Hero3("").getClass())
+          steps = 2;
+        if (piece.y == App.grid.length - 1 || piece.x - steps < 0)
+          return "Character going out of grid bounds.";
+        if (!App.grid[piece.y + 1][piece.x - steps].equals("-"))
+          if (App.grid[piece.y + 1][piece.x - steps].split("-")[0].equals(name))
+            return "Targeting a friendly character, i.e a character from our own team.";
+          else
+            kill = "true";
+        return piece.x + ":" + piece.y + ":" + (piece.x -= steps) + ":" + (++piece.y) + ":" + kill;
       }
     } else
       return "Input command on a character that does not exist";
