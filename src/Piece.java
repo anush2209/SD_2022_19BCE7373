@@ -2,14 +2,14 @@ import java.util.*;
 
 public class Piece {
   private String name;
-  private int status;
+  private int strength;
   public HashSet<String> moves;
   public int x;
   public int y;
 
-  Piece(String name) {
+  Piece(String name, int strength) {
     this.name = name;
-    this.status = 1;
+    this.strength = strength;
   }
 
   void setPosition(int x, int y) {
@@ -26,6 +26,10 @@ public class Piece {
 
   String getName() {
     return name;
+  }
+
+  int getStrength() {
+    return strength;
   }
 
   void addMoves(HashSet<String> value) {

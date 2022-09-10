@@ -25,36 +25,68 @@ public class App {
             addGrid(player2.initializePiece(pieces[i], i, 0), 0, i);
         while (player1.getPiecesLeft() > 0 && player2.getPiecesLeft() > 0) {
             displayGrid(grid);
-            String player1Message = "";
+            String message = "";
             String moveInput = "";
-            while (!player1Message.contains(":")) {
-                System.out.print("Player A’s Move: ");
+            boolean playerMove = true;
+            while (playerMove) {
+                System.out.print("Player A's Move: ");
                 moveInput = read.nextLine();
-                player1Message = player1.makeMove(moveInput);
-                // System.out.println(player1Message + " " + player1.getPiecesLeft());
+                Piece piece = null;
+                for (int i = 0; i < player1.characters.size(); i++)
+                    if (player1.characters.get(i).getName().equals(moveInput.split(":")[0]))
+                        piece = player1.characters.get(i);
+                if (piece == null)
+                    continue;
+                int times = piece.getStrength();
+                while (times > 0) {
+                    message = player1.makeMove(piece, moveInput.split(":")[1]);
+                    if (message.contains(":")) {
+                        times--;
+                        String[] directions = message.split(":");
+                        if (directions[4].equals("true"))
+                            player2.killPiece(grid[Integer.parseInt(directions[3])][Integer.parseInt(directions[2])]
+                                    .split("-")[1]);
+                        grid[Integer.parseInt(directions[3])][Integer.parseInt(directions[2])] = player1.getName() + "-"
+                                + moveInput.split(":")[0];
+                        grid[Integer.parseInt(directions[1])][Integer.parseInt(directions[0])] = "-";
+                    } else
+                        break;
+                    if (times == 0)
+                        playerMove = false;
+                }
+                // System.out.println(message + " " + player1.getPiecesLeft());
             }
-            String[] directions = player1Message.split(":");
-            if (directions[4].equals("true"))
-                player2.killPiece(grid[Integer.parseInt(directions[3])][Integer.parseInt(directions[2])].split("-")[1]);
-            grid[Integer.parseInt(directions[3])][Integer.parseInt(directions[2])] = player1.getName() + "-"
-                    + moveInput.split(":")[0];
-            grid[Integer.parseInt(directions[1])][Integer.parseInt(directions[0])] = "-";
             displayGrid(grid);
-            String player2Message = "";
-            while (!player2Message.contains(":")) {
-                System.out.print("Player B’s Move: ");
+            playerMove = true;
+            message = "";
+            while (playerMove) {
+                System.out.print("Player B's Move: ");
                 moveInput = read.nextLine();
-                player2Message = player2.makeMove(moveInput);
-                // System.out.println(player2Message + " " + player2.getPiecesLeft());
+                Piece piece = null;
+                for (int i = 0; i < player2.characters.size(); i++)
+                    if (player2.characters.get(i).getName().equals(moveInput.split(":")[0]))
+                        piece = player2.characters.get(i);
+                int times = piece.getStrength();
+                while (times > 0) {
+                    message = player2.makeMove(piece, moveInput.split(":")[1]);
+                    if (message.contains(":")) {
+                        times--;
+                        String[] directions = message.split(":");
+                        if (directions[4].equals("true"))
+                            player1.killPiece(grid[Integer.parseInt(directions[3])][Integer.parseInt(directions[2])]
+                                    .split("-")[1]);
+                        grid[Integer.parseInt(directions[3])][Integer.parseInt(directions[2])] = player2.getName() + "-"
+                                + moveInput.split(":")[0];
+                        grid[Integer.parseInt(directions[1])][Integer.parseInt(directions[0])] = "-";
+                    } else
+                        break;
+                    if (times == 0)
+                        playerMove = false;
+                }
+                // System.out.println(message + " " + player2.getPiecesLeft());
             }
-            directions = player2Message.split(":");
-            if (directions[4].equals("true"))
-                player1.killPiece(grid[Integer.parseInt(directions[3])][Integer.parseInt(directions[2])].split("-")[1]);
-            grid[Integer.parseInt(directions[3])][Integer.parseInt(directions[2])] = player2.getName() + "-"
-                    + moveInput.split(":")[0];
-            grid[Integer.parseInt(directions[1])][Integer.parseInt(directions[0])] = "-";
-
         }
+        read.close();
     }
 
     private static void addGrid(String value, int i, int j) {

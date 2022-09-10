@@ -2,7 +2,8 @@ import java.util.*;
 
 public class Player {
   private String name;
-  private List<Piece> characters = new ArrayList<Piece>();
+  List<Piece> characters = new ArrayList<Piece>();
+  private int times;
 
   public void play(String name) {
     this.name = name;
@@ -11,6 +12,14 @@ public class Player {
   public String initializePiece(String piece, int x, int y) {
     if (piece.charAt(0) == 'P') {
       Piece newPiece = new Pawn(piece);
+      newPiece.setPosition(x, y);
+      characters.add(newPiece);
+    } else if (piece.charAt(0) == 'H' && piece.charAt(1) == '1') {
+      Piece newPiece = new Hero1(piece);
+      newPiece.setPosition(x, y);
+      characters.add(newPiece);
+    } else if (piece.charAt(0) == 'H' && piece.charAt(1) == '2') {
+      Piece newPiece = new Hero2(piece);
       newPiece.setPosition(x, y);
       characters.add(newPiece);
     }
@@ -25,9 +34,8 @@ public class Player {
     return characters.size();
   }
 
-  public String makeMove(String input) {
-    String characterName = input.split(":")[0];
-    String move = input.split(":")[1];
+  public String makeMove(Piece piece, String move) {
+    String kill = "false";
     if (name == "B")
       switch (move) {
         case "F":
@@ -42,12 +50,19 @@ public class Player {
         case "R":
           move = "L";
           break;
+        case "FL":
+          move = "BR";
+          break;
+        case "FR":
+          move = "BL";
+          break;
+        case "BL":
+          move = "FR";
+          break;
+        case "BR":
+          move = "FL";
+          break;
       }
-    Piece piece = null;
-    String kill = "false";
-    for (int i = 0; i < characters.size(); i++)
-      if (characters.get(i).getName().equals(characterName))
-        piece = characters.get(i);
     if (piece != null) {
       if (!piece.moves.contains(move))
         return "Invalid move presented for a given character.";
@@ -87,14 +102,42 @@ public class Player {
           else
             kill = "true";
         return piece.x + ":" + piece.y + ":" + piece.x + ":" + (++piece.y) + ":" + kill;
-      } else if (move.equals("")) {
-
-      } else if (move.equals("")) {
-
-      } else if (move.equals("")) {
-
-      } else if (move.equals("")) {
-
+      } else if (move.equals("FL")) {
+        if (piece.y == 0 || piece.x == 0)
+          return "Character going out of grid bounds.";
+        if (!App.grid[piece.y - 1][piece.x - 1].equals("-"))
+          if (App.grid[piece.y - 1][piece.x - 1].split("-")[0].equals(name))
+            return "Targeting a friendly character, i.e a character from our own team.";
+          else
+            kill = "true";
+        return piece.x + ":" + piece.y + ":" + (--piece.x) + ":" + (--piece.y) + ":" + kill;
+      } else if (move.equals("FR")) {
+        if (piece.y == 0 || piece.x == App.grid.length - 1)
+          return "Character going out of grid bounds.";
+        if (!App.grid[piece.y - 1][piece.x + 1].equals("-"))
+          if (App.grid[piece.y - 1][piece.x + 1].split("-")[0].equals(name))
+            return "Targeting a friendly character, i.e a character from our own team.";
+          else
+            kill = "true";
+        return piece.x + ":" + piece.y + ":" + (++piece.x) + ":" + (--piece.y) + ":" + kill;
+      } else if (move.equals("BL")) {
+        if (piece.y == App.grid.length - 1 || piece.x == 0)
+          return "Character going out of grid bounds.";
+        if (!App.grid[piece.y + 1][piece.x - 1].equals("-"))
+          if (App.grid[piece.y + 1][piece.x - 1].split("-")[0].equals(name))
+            return "Targeting a friendly character, i.e a character from our own team.";
+          else
+            kill = "true";
+        return piece.x + ":" + piece.y + ":" + (--piece.x) + ":" + (++piece.y) + ":" + kill;
+      } else if (move.equals("BR")) {
+        if (piece.y == App.grid.length - 1 || piece.x == App.grid.length - 1)
+          return "Character going out of grid bounds.";
+        if (!App.grid[piece.y + 1][piece.x + 1].equals("-"))
+          if (App.grid[piece.y + 1][piece.x + 1].split("-")[0].equals(name))
+            return "Targeting a friendly character, i.e a character from our own team.";
+          else
+            kill = "true";
+        return piece.x + ":" + piece.y + ":" + (++piece.x) + ":" + (++piece.y) + ":" + kill;
       }
     } else
       return "Input command on a character that does not exist";

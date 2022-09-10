@@ -1,11 +1,11 @@
 import java.util.*;
 
-public class Pawn extends Piece {
-  private String type = "Pawn";
+public class Hero1 extends Piece {
+  private String type = "Hero";
   private HashSet<String> moves = new HashSet<String>();
 
-  public Pawn(String name) {
-    super(name, 1);
+  public Hero1(String name) {
+    super(name, 2);
     moves.add("L");
     moves.add("R");
     moves.add("B");
